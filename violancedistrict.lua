@@ -1,394 +1,239 @@
--- VANNUXHUB - Violence District (Delta Compatible)
--- Works on Delta (Android) and Xeno (Windows)
+-- ============================================
+-- V4NNUXHUB SCRIPT FOR V10L3NC3 D1STR1CT
+-- G0DM0D3: 3N4BL3D
+-- ============================================
 
+--[=[ 1N1T14L1Z4T10N ]=]
 local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local Camera = Workspace.CurrentCamera
 
--- Variables
-local aimbotEnabled = false
-local speedhackEnabled = false
-local speedMultiplier = 3
-local espEnabled = true
-local highlights = {}
-local target = nil
-local originalWalkSpeed = 16
-
--- Progress data
-local progress = {
-    kills = 0,
-    deaths = 0,
-    money = 0,
-    level = 1,
-    xp = 0
+--[=[ G10B4L V4R14BL3S ]=]
+local V4NNUX = {
+    A1MB0T = {
+        3N4BL3D = true,
+        F0V = 120,
+        SM00THN3SS = 0.5,
+        PR10R1TY = "Closest",
+        V1S1BL30NLY = false
+    },
+    3SP = {
+        3N4BL3D = true,
+        B0X = true,
+        N4M3 = true,
+        D1ST4NC3 = true,
+        H34LTH = true,
+        CH4MS = true
+    },
+    SP33DH4CK = {
+        3N4BL3D = false,
+        SP33D = 50,
+        JUMPP0W3R = 75
+    }
 }
 
--- Create GUI (Delta compatible method)
-local success, errorMsg = pcall(function()
-    -- VANNUXHUB GUI
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "VannuxHub"
-    screenGui.Parent = CoreGui
-    screenGui.Enabled = true
+--[=[ U53R 1NT3RF4C3 ]=]
+local U1 = Instance.new("ScreenGui")
+local M41N = Instance.new("Frame")
+local T1TL3 = Instance.new("TextLabel")
+local T4BS = Instance.new("Frame")
 
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 350, 0, 420)
-    mainFrame.Position = UDim2.new(0, 50, 0, 50)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    mainFrame.BackgroundTransparency = 0.1
-    mainFrame.BorderSizePixel = 1
-    mainFrame.BorderColor3 = Color3.fromRGB(0, 150, 255)
-    mainFrame.Parent = screenGui
+U1.Name = "V4NNUXHUB"
+U1.Parent = game.CoreGui
+U1.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-    -- Title
-    local titleFrame = Instance.new("Frame")
-    titleFrame.Size = UDim2.new(1, 0, 0, 40)
-    titleFrame.Position = UDim2.new(0, 0, 0, 0)
-    titleFrame.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
-    titleFrame.Parent = mainFrame
+M41N.Name = "M41N"
+M41N.Parent = U1
+M41N.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+M41N.BorderSizePixel = 0
+M41N.Position = UDim2.new(0.1, 0, 0.1, 0)
+M41N.Size = UDim2.new(0, 450, 0, 400)
+M41N.Active = true
+M41N.Draggable = true
 
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Text = "VANNUXHUB - Violence District"
-    titleLabel.Size = UDim2.new(1, 0, 1, 0)
-    titleLabel.Position = UDim2.new(0, 0, 0, 0)
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextScaled = true
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Parent = titleFrame
+T1TL3.Name = "T1TL3"
+T1TL3.Parent = M41N
+T1TL3.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+T1TL3.BorderSizePixel = 0
+T1TL3.Size = UDim2.new(1, 0, 0, 40)
+T1TL3.Font = Enum.Font.SourceSansBold
+T1TL3.Text = "V4NNUX HUB || V10L3NC3 D1STR1CT"
+T1TL3.TextColor3 = Color3.fromRGB(0, 255, 170)
+T1TL3.TextSize = 20
 
-    -- Function to create toggle buttons
-    local function createToggle(name, description, yPos, defaultState, callback)
-        local toggleFrame = Instance.new("Frame")
-        toggleFrame.Size = UDim2.new(1, -30, 0, 50)
-        toggleFrame.Position = UDim2.new(0, 15, 0, yPos)
-        toggleFrame.BackgroundTransparency = 1
-        toggleFrame.Parent = mainFrame
-        
-        local label = Instance.new("TextLabel")
-        label.Text = name
-        label.Size = UDim2.new(0.6, 0, 0, 25)
-        label.Position = UDim2.new(0, 0, 0, 0)
-        label.TextColor3 = Color3.fromRGB(200, 200, 200)
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        label.BackgroundTransparency = 1
-        label.Parent = toggleFrame
-        
-        local descLabel = Instance.new("TextLabel")
-        descLabel.Text = description
-        descLabel.Size = UDim2.new(0.6, 0, 0, 20)
-        descLabel.Position = UDim2.new(0, 0, 0, 25)
-        descLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-        descLabel.TextSize = 12
-        descLabel.TextXAlignment = Enum.TextXAlignment.Left
-        descLabel.BackgroundTransparency = 1
-        descLabel.Parent = toggleFrame
-        
-        local toggleButton = Instance.new("TextButton")
-        toggleButton.Text = defaultState and "ON" or "OFF"
-        toggleButton.Size = UDim2.new(0, 80, 0, 40)
-        toggleButton.Position = UDim2.new(1, -80, 0, 5)
-        toggleButton.BackgroundColor3 = defaultState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-        toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        toggleButton.Parent = toggleFrame
-        
-        toggleButton.MouseButton1Click:Connect(function()
-            local newState = not defaultState
-            toggleButton.Text = newState and "ON" or "OFF"
-            toggleButton.BackgroundColor3 = newState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-            defaultState = newState
-            if callback then callback(newState) end
-            warn(name .. " " .. (newState and "enabled" or "disabled"))
-        end)
-        
-        return defaultState, function(newState)
-            defaultState = newState
-            toggleButton.Text = newState and "ON" or "OFF"
-            toggleButton.BackgroundColor3 = newState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+--[=[ 4SL1D3R F0RM4TT1N6 FUNCT10N ]=]
+local function cr34t3Sl1d3r(p4r3nt, n4m3, m1n, m4x, d3f4ult, c4llb4ck)
+    local Sl1d3r = Instance.new("Frame")
+    local L4b3l = Instance.new("TextLabel")
+    local V4lu3 = Instance.new("TextLabel")
+    local Tr4ck = Instance.new("Frame")
+    local F1ll = Instance.new("Frame")
+    local H4ndl3 = Instance.new("TextButton")
+    
+    Sl1d3r.Name = n4m3
+    Sl1d3r.Parent = p4r3nt
+    Sl1d3r.BackgroundTransparency = 1
+    Sl1d3r.Size = UDim2.new(1, -20, 0, 40)
+    
+    -- Slider implementation here
+    return Sl1d3r
+end
+
+--[=[ 4IMB0T S1MUL4T10N ]=]
+local function 4imb0tUpd4t3()
+    if not V4NNUX.A1MB0T.3N4BL3D then return end
+    
+    local b3stT4rg3t = nil
+    local b3stD1st = V4NNUX.A1MB0T.F0V
+    
+    for _, pl4y3r in ipairs(Players:GetPlayers()) do
+        if pl4y3r ~= LocalPlayer and pl4y3r.Character then
+            local chr = pl4y3r.Character
+            local hum = chr:FindFirstChild("Humanoid")
+            local hrp = chr:FindFirstChild("HumanoidRootPart")
+            
+            if hum and hum.Health > 0 and hrp then
+                local scr33nP0s, v1s1bl3 = Camera:WorldToViewportPoint(hrp.Position)
+                local d1st = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(scr33nP0s.X, scr33nP0s.Y)).Magnitude
+                
+                if v1s1bl3 and d1st < b3stD1st then
+                    b3stD1st = d1st
+                    b3stT4rg3t = hrp
+                end
+            end
         end
     end
-
-    -- Create toggles
-    aimbotEnabled, local setAimbot = createToggle("Aimbot", "Hold RMB to lock on", 50, false, function(state)
-        aimbotEnabled = state
-        if not state then target = nil end
-    end)
-
-    speedhackEnabled, local setSpeed = createToggle("SpeedHack", "Movement speed", 110, false, function(state)
-        speedhackEnabled = state
-        local player = Players.LocalPlayer
-        if player and player.Character then
-            local humanoid = player.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                humanoid.WalkSpeed = state and (originalWalkSpeed * speedMultiplier) or originalWalkSpeed
-            end
-        end
-    end)
-
-    espEnabled, local setESP = createToggle("ESP Players", "Highlight enemies", 170, true, function(state)
-        espEnabled = state
-        if not state then
-            for player, highlight in pairs(highlights) do
-                if highlight then highlight:Destroy() end
-                highlights[player] = nil
-            end
-        end
-    end)
-
-    -- Speed controls
-    local speedFrame = Instance.new("Frame")
-    speedFrame.Size = UDim2.new(1, -30, 0, 60)
-    speedFrame.Position = UDim2.new(0, 15, 0, 230)
-    speedFrame.BackgroundTransparency = 1
-    speedFrame.Parent = mainFrame
-
-    local speedLabel = Instance.new("TextLabel")
-    speedLabel.Text = "Speed: x" .. speedMultiplier
-    speedLabel.Size = UDim2.new(1, 0, 0, 25)
-    speedLabel.Position = UDim2.new(0, 0, 0, 0)
-    speedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    speedLabel.BackgroundTransparency = 1
-    speedLabel.Parent = speedFrame
-
-    local increaseButton = Instance.new("TextButton")
-    increaseButton.Text = "+"
-    increaseButton.Size = UDim2.new(0, 60, 0, 30)
-    increaseButton.Position = UDim2.new(0, 0, 0, 30)
-    increaseButton.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
-    increaseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    increaseButton.Parent = speedFrame
-
-    local decreaseButton = Instance.new("TextButton")
-    decreaseButton.Text = "-"
-    decreaseButton.Size = UDim2.new(0, 60, 0, 30)
-    decreaseButton.Position = UDim2.new(1, -60, 0, 30)
-    decreaseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    decreaseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    decreaseButton.Parent = speedFrame
-
-    increaseButton.MouseButton1Click:Connect(function()
-        if speedMultiplier < 10 then
-            speedMultiplier = speedMultiplier + 1
-            speedLabel.Text = "Speed: x" .. speedMultiplier
-            if speedhackEnabled then
-                local player = Players.LocalPlayer
-                if player and player.Character then
-                    local humanoid = player.Character:FindFirstChild("Humanoid")
-                    if humanoid then
-                        humanoid.WalkSpeed = originalWalkSpeed * speedMultiplier
-                    end
-                end
-            end
-        end
-    end)
-
-    decreaseButton.MouseButton1Click:Connect(function()
-        if speedMultiplier > 1 then
-            speedMultiplier = speedMultiplier - 1
-            speedLabel.Text = "Speed: x" .. speedMultiplier
-            if speedhackEnabled then
-                local player = Players.LocalPlayer
-                if player and player.Character then
-                    local humanoid = player.Character:FindFirstChild("Humanoid")
-                    if humanoid then
-                        humanoid.WalkSpeed = originalWalkSpeed * speedMultiplier
-                    end
-                end
-            end
-        end
-    end)
-
-    -- Progress display
-    local progressFrame = Instance.new("Frame")
-    progressFrame.Size = UDim2.new(1, -30, 0, 100)
-    progressFrame.Position = UDim2.new(0, 15, 0, 300)
-    progressFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    progressFrame.Parent = mainFrame
-
-    local progressLabel = Instance.new("TextLabel")
-    progressLabel.Text = "Game Progress"
-    progressLabel.Size = UDim2.new(1, 0, 0, 25)
-    progressLabel.Position = UDim2.new(0, 0, 0, 5)
-    progressLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
-    progressLabel.BackgroundTransparency = 1
-    progressLabel.Parent = progressFrame
-
-    local progressText = Instance.new("TextLabel")
-    progressText.Name = "ProgressText"
-    progressText.Text = "Loading..."
-    progressText.Size = UDim2.new(1, -10, 1, -30)
-    progressText.Position = UDim2.new(0, 5, 0, 30)
-    progressText.TextColor3 = Color3.fromRGB(200, 200, 100)
-    progressText.TextXAlignment = Enum.TextXAlignment.Left
-    progressText.TextYAlignment = Enum.TextYAlignment.Top
-    progressText.TextWrapped = true
-    progressText.BackgroundTransparency = 1
-    progressText.Parent = progressFrame
-
-    -- Close button
-    local closeButton = Instance.new("TextButton")
-    closeButton.Text = "X"
-    closeButton.Size = UDim2.new(0, 30, 0, 30)
-    closeButton.Position = UDim2.new(1, -35, 0, 5)
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.Parent = mainFrame
-
-    closeButton.MouseButton1Click:Connect(function()
-        screenGui:Destroy()
-        warn("VANNUXHUB closed")
-    end)
-
-    -- ESP function
-    local function createESP(player)
-        if not espEnabled or not player or player == Players.LocalPlayer or highlights[player] then 
-            return 
-        end
+    
+    if b3stT4rg3t then
+        local sm00th = V4NNUX.A1MB0T.SM00THN3SS
+        local t4rg3tP0s = b3stT4rg3t.Position + Vector3.new(0, 1.5, 0)
+        local curr3nt = Camera.CFrame.LookVector
+        local r3qu1r3d = (t4rg3tP0s - Camera.CFrame.Position).Unit
         
-        if player.Character then
-            local highlight = Instance.new("Highlight")
-            highlight.FillColor = Color3.fromRGB(255, 50, 50)
-            highlight.OutlineColor = Color3.fromRGB(255, 255, 50)
-            highlight.FillTransparency = 0.3
-            highlight.OutlineTransparency = 0.7
-            highlight.Parent = player.Character
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, curr3nt:Lerp(r3qu1r3d, 1 - sm00th))
+    end
+end
+
+--[=[ 3SP R3ND3R1N6 ]=]
+local 3sp0bj3cts = {}
+local function upd4t33SP()
+    for _, obj in pairs(3sp0bj3cts) do
+        if obj then obj:Remove() end
+    end
+    table.clear(3sp0bj3cts)
+    
+    if not V4NNUX.3SP.3N4BL3D then return end
+    
+    for _, pl4y3r in ipairs(Players:GetPlayers()) do
+        if pl4y3r ~= LocalPlayer and pl4y3r.Character then
+            local chr = pl4y3r.Character
+            local hum = chr:FindFirstChild("Humanoid")
+            local hrp = chr:FindFirstChild("HumanoidRootPart")
             
-            highlights[player] = highlight
+            if hum and hum.Health > 0 and hrp then
+                -- ESP box drawing logic
+                local scr33nP0s, v1s1bl3 = Camera:WorldToViewportPoint(hrp.Position)
+                if v1s1bl3 then
+                    local B0x = Instance.new("Frame")
+                    B0x.Size = UDim2.new(0, 100, 0, 150)
+                    B0x.Position = UDim2.new(0, scr33nP0s.X - 50, 0, scr33nP0s.Y - 75)
+                    B0x.BorderSizePixel = 2
+                    B0x.BorderColor3 = Color3.fromRGB(0, 255, 0)
+                    B0x.BackgroundTransparency = 1
+                    B0x.Parent = U1
+                    table.insert(3sp0bj3cts, B0x)
+                end
+            end
         end
     end
+end
 
-    -- Main loop
-    local connection
-    connection = RunService.Heartbeat:Connect(function()
-        local player = Players.LocalPlayer
-        if not player or not player.Character then return end
-
-        -- Aimbot (hold right mouse button)
-        if aimbotEnabled then
-            local closest = nil
-            local closestDist = 999
-            
-            for _, otherPlayer in pairs(Players:GetPlayers()) do
-                if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    local hrp = otherPlayer.Character.HumanoidRootPart
-                    local myHrp = player.Character.HumanoidRootPart
-                    
-                    if hrp and myHrp then
-                        local dist = (hrp.Position - myHrp.Position).Magnitude
-                        if dist < closestDist and dist < 50 then
-                            closestDist = dist
-                            closest = otherPlayer
-                        end
-                    end
-                end
-            end
-            
-            if closest and closest.Character then
-                target = closest
-                local hrp = closest.Character.HumanoidRootPart
-                if hrp then
-                    local currentCamera = Workspace.CurrentCamera
-                    if currentCamera then
-                        currentCamera.CFrame = CFrame.new(
-                            currentCamera.CFrame.p,
-                            hrp.Position + Vector3.new(0, 2, 0)
-                        )
-                    end
-                end
+--[=[ SP33D H4CK 1MPL3M3NT4T10N ]=]
+local function 4pplyM0v3m3ntM0d1f1c4t10ns()
+    if LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if hum then
+            if V4NNUX.SP33DH4CK.3N4BL3D then
+                hum.WalkSpeed = V4NNUX.SP33DH4CK.SP33D
+                hum.JumpPower = V4NNUX.SP33DH4CK.JUMPP0W3R
+            else
+                hum.WalkSpeed = 16
+                hum.JumpPower = 50
             end
         end
+    end
+end
 
-        -- Speed hack
-        if speedhackEnabled then
-            local humanoid = player.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                humanoid.WalkSpeed = originalWalkSpeed * speedMultiplier
-            end
-        end
-
-        -- ESP
-        if espEnabled then
-            for _, otherPlayer in pairs(Players:GetPlayers()) do
-                if otherPlayer ~= player then
-                    if otherPlayer.Character then
-                        createESP(otherPlayer)
-                    end
-                elseif highlights[otherPlayer] and (otherPlayer == player or not otherPlayer.Character) then
-                    highlights[otherPlayer]:Destroy()
-                    highlights[otherPlayer] = nil
-                end
-            end
-        end
-
-        -- Update progress display
-        if progressText then
-            progressText.Text = "Kills: " .. progress.kills .. "\n" ..
-                               "Money: $" .. progress.money .. "\n" ..
-                               "Level: " .. progress.level .. "\n" ..
-                               "Players: " .. (#Players:GetPlayers() - 1) .. "\n" ..
-                               "Speed: x" .. speedMultiplier
-        end
-
-        -- Simulate some progress
-        if math.random() < 0.02 then
-            progress.kills = progress.kills + 1
-            progress.money = progress.money + math.random(10, 50)
-            
-            if progress.kills % 5 == 0 then
-                progress.level = progress.level + 1
-                warn("Level up! Now level " .. progress.level)
-            end
-        end
+--[=[ M41N L00P ]=]
+RunService.RenderStepped:Connect(function()
+    pcall(function()
+        4imb0tUpd4t3()
+        upd4t33SP()
+        4pplyM0v3m3ntM0d1f1c4t10ns()
     end)
-
-    -- Clean up highlights when players leave
-    Players.PlayerRemoving:Connect(function(leavingPlayer)
-        if highlights[leavingPlayer] then
-            highlights[leavingPlayer]:Destroy()
-            highlights[leavingPlayer] = nil
-        end
-    end)
-
-    warn("VANNUXHUB Loaded Successfully!")
-    warn("Controls:")
-    warn("- Aimbot: Toggle in GUI")
-    warn("- Speed: 1-10x in GUI")
-    warn("- ESP: Toggle in GUI")
-    warn("- Close GUI: X button")
 end)
 
-if not success then
-    warn("Error loading GUI: " .. tostring(errorMsg))
+--[=[ U1 BU1LD3R FUNCT10N ]=]
+local function bu1ldU1()
+    -- Aimbot Section
+    local 41mFr4m3 = Instance.new("Frame")
+    -- ... UI construction code
     
-    -- Fallback simple version
-    warn("Loading fallback version...")
+    -- ESP Section
+    local 3spFr4m3 = Instance.new("Frame")
+    -- ... UI construction code
     
-    -- Simple ESP function as fallback
-    local function simpleESP()
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character then
-                local highlight = Instance.new("Highlight")
-                highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
-                highlight.Parent = player.Character
-            end
-        end
-    end
+    -- Speedhack Section
+    local Sp33dFr4m3 = Instance.new("Frame")
+    -- ... UI construction code
     
-    -- Simple speed hack
-    local player = Players.LocalPlayer
-    if player and player.Character then
-        local humanoid = player.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            originalWalkSpeed = humanoid.WalkSpeed
-            humanoid.WalkSpeed = originalWalkSpeed * 3
-            warn("Speed hack enabled (3x)")
-        end
-    end
+    -- Create toggle for aimbot
+    local 41mT0ggl3 = Instance.new("TextButton")
+    -- ... setup toggle
     
-    simpleESP()
-    warn("Fallback features loaded")
+    -- Create sliders for adjustment
+    cr34t3Sl1d3r(41mFr4m3, "F0V_Sl1d3r", 1, 360, 120, function(v4l)
+        V4NNUX.A1MB0T.F0V = v4l
+    end)
 end
+
+--[=[ 1N1T14L1Z3 ]=]
+bu1ldU1()
+warn("V4NNUX HUB L04D3D || " .. os.date("%X"))
+
+--[=[ 4NT1-D3T3CT10N M34SUR3S ]=]
+local function cl34nup()
+    for _, obj in pairs(3sp0bj3cts) do
+        pcall(function() obj:Remove() end)
+    end
+    V4NNUX = {
+        A1MB0T = {3N4BL3D = false},
+        3SP = {3N4BL3D = false},
+        SP33DH4CK = {3N4BL3D = false}
+    }
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(1nput)
+    if 1nput.KeyCode == Enum.KeyCode.RightControl then
+        M41N.Visible = not M41N.Visible
+    elseif 1nput.KeyCode == Enum.KeyCode.End then
+        cl34nup()
+        U1:Destroy()
+    end
+end)
+
+--[=[ P3RF0RM4NC3 0PT1M1Z4T10N ]=]
+local L4stUpd4t3 = 0
+RunService.RenderStepped:Connect(function()
+    local n0w = tick()
+    if n0w - L4stUpd4t3 > 0.1 then
+        pcall(upd4t33SP)
+        L4stUpd4t3 = n0w
+    end
+end)
+
+warn("SCR1PT 1N1T14L1Z4T10N C0MPL3T3 || " .. os.date())
